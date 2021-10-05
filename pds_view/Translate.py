@@ -38,10 +38,10 @@ import sys
 sys.path.append("..")
 
 from airspeed import CachingFileLoader
-from pds.core.common import open_pds
-from pds.core.parse_duplicate_ids import ParseDuplicateIds
-from pds.core.parser_jh import Parser_jh
-from pds.core.parser import Parser
+from .pds.core.common import open_pds
+from .pds.core.parse_duplicate_ids import ParseDuplicateIds
+from .pds.core.parser_jh import Parser_jh
+from .pds.core.parser import Parser
 
 from . import resource_path
 

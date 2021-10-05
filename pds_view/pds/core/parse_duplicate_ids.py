@@ -34,7 +34,7 @@
 parse_duplicate_ids.py
 """
 # from common import open_pds
-from reader import Reader
+from .reader import Reader
 
 class ParseDuplicateIds(object):
     """Parse PDS files into a dictionary.

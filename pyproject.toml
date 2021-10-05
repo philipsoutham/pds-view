@@ -5,13 +5,15 @@ description = ""
 authors = ["Philip Southam <philip.southam@jpl.nasa.gov>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.11"
 PyQt5 = "^5.15.4"
 airspeed = "^0.5.17"
 Pillow = "^8.3.2"
 matplotlib = "^3.4.3"
 seaborn = "^0.11.2"
-PyQt6 = "^6.2.0"
+# PyQt6 = "^6.2.0"
+numpy = "^1.21.2"
+Kivy = {extras = ["base"], version = "^2.0.0"}
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"

@@ -32,7 +32,7 @@ import sys
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-import searchLabelDialog_ui
+from . import searchLabelDialog_ui
 
 # TODO: why
 MAC = sys.platform.startswith("darwin")

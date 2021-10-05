@@ -46,7 +46,7 @@ import sys
 import unittest
 
 # from common import open_pds
-from reader import Reader
+from .reader import Reader
 
 
 class ParserError(Exception):

@@ -36,6 +36,7 @@ import sys
 import re
 from collections import OrderedDict
 import textwrap
+from pathlib import Path
 
 # TODO: is the following important?
 # from PyQt5 import sip
@@ -52,7 +53,7 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.widgets import RectangleSelector
-from matplotlib.backends.backend_qt4agg import (
+from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT,
 )
@@ -67,13 +68,10 @@ except ImportError:
 
 import seaborn as sns
 
-import Model
-
-import Translate
-
-import searchTableDialog
-import searchLabelDialog
-
+from . import Model
+from . import Translate
+from . import searchTableDialog
+from . import searchLabelDialog
 from . import resource_path
 
 MAC = sys.platform.startswith("darwin")
@@ -95,7 +93,7 @@ class MainWindow(QtWidgets.QMainWindow):
     )
 
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        super().__init__(parent)
 
         self.filename = None
         self.title = ""
@@ -153,7 +151,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.group_text_color_default
         )  # set default value when we first start
 
-        settings = QSettings()
+        settings = QtCore.QSettings()
         self.recentFiles = settings.value("RecentFiles") or []
 
         self.threeDTabInPlace = False
@@ -187,9 +185,9 @@ class MainWindow(QtWidgets.QMainWindow):
             "Array_2D_Map",
         )
 
-        self.logo = QLabel()
+        self.logo = QtWidgets.QLabel()
         try:
-            self.logo.setPixmap(QPixmap(resource_path("./Icons/drop-target.png")))
+            self.logo.setPixmap(QtGui.QPixmap(resource_path("./Icons/drop-target.png")))
         except:
             print("Could not read logo")
         self.setCentralWidget(self.logo)
@@ -209,8 +207,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # This returns a list of all the available themes/styles for the OS
         # It will be used in the setTheme callback to only enable those items in the list
-        qlist = QStyleFactory.keys()
-        self.theme_list = str(qlist.join(" ")).split(" ")
+        qlist = QtWidgets.QStyleFactory.keys()
+        self.theme_list = list(qlist)
 
         self.styleData = ""
 
@@ -219,7 +217,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setStyleSheet("")
 
         # connect to Summary table to recieve a 'View' button clicked signal
-        self.connect(self, SIGNAL("SummaryTableTriggered"), self.handle_view_clicked)
+        # TODO: debug this
+        # self.connect(self, SIGNAL("SummaryTableTriggered"), self.handle_view_clicked)
 
         self.tabFrame = Tab()
 
@@ -227,37 +226,37 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.tabFrame.setGeometry(10,10,555,550)
 
         # add tabs
-        self.labelTab = QWidget()
-        self.tableTab = QWidget()
-        self.threeDTableTab = QWidget()
-        self.rgbImageTab = QWidget()
-        self.imageTab = QWidget()
-        self.summaryTab = QWidget()
+        self.labelTab = QtWidgets.QWidget()
+        self.tableTab = QtWidgets.QWidget()
+        self.threeDTableTab = QtWidgets.QWidget()
+        self.rgbImageTab = QtWidgets.QWidget()
+        self.imageTab = QtWidgets.QWidget()
+        self.summaryTab = QtWidgets.QWidget()
 
         # self.tabFrame.addTab(self.labelTab, "Label  ")
         # self.tabFrame.addTab(self.tableTab, "Table  ")
         # self.tabFrame.addTab(self.imageTab, "Image  ")
         # self.tabFrame.addTab(self.summaryTab, "Summary")
 
-        self.summaryLayout = QHBoxLayout()
+        self.summaryLayout = QtWidgets.QHBoxLayout()
 
-        self.labelLayout = QHBoxLayout()
+        self.labelLayout = QtWidgets.QHBoxLayout()
 
-        self.tableLayout = QVBoxLayout()
+        self.tableLayout = QtWidgets.QVBoxLayout()
 
-        self.tableInfoLayout = QHBoxLayout()
+        self.tableInfoLayout = QtWidgets.QHBoxLayout()
 
-        self.threeDTableLayout = QGridLayout()
+        self.threeDTableLayout = QtWidgets.QGridLayout()
         # self.threeDTableInfoLayout = QHBoxLayout()
 
-        self.rgbTableLayout = QGridLayout()
+        self.rgbTableLayout = QtWidgets.QGridLayout()
 
         # image options used for display and saving images
         self.image_width = 0
         self.image_height = 0
         self.dpi = 72.0
 
-        self.imageLayout = QVBoxLayout()
+        self.imageLayout = QtWidgets.QVBoxLayout()
 
         self._settings = {
             "dpi": self.dpi,
@@ -277,27 +276,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tabFrame.setMovable(False)
 
         # This holds the Summary
-        self.winLabel = QLabel()
+        self.winLabel = QtWidgets.QLabel()
 
         self.winLabel.setMinimumSize(500, 60)
-        self.winLabel.setAlignment(Qt.AlignCenter)
-        self.winLabel.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.winLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.winLabel.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
 
-        self.summaryDockWidget = QDockWidget(self.title, self)
+        self.summaryDockWidget = QtWidgets.QDockWidget(self.title, self)
         self.summaryDockWidget.setObjectName("summaryDockWidget")
-        self.summaryDockWidget.setAllowedAreas(Qt.RightDockWidgetArea)
+        self.summaryDockWidget.setAllowedAreas(QtCore.Qt.RightDockWidgetArea)
 
         self.summaryDockWidget.setFloating(False)
 
         # Add a placeholder for the summary and hide it
-        self.holder = QWidget()
+        self.holder = QtWidgets.QWidget()
         self.holder.setMinimumSize(200, 150)
         self.summaryDockWidget.setWidget(self.holder)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.summaryDockWidget)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.summaryDockWidget)
         self.summaryDockWidget.hide()
 
-        self.sizeLabel = QLabel()
-        self.sizeLabel.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
+        self.sizeLabel = QtWidgets.QLabel()
+        self.sizeLabel.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Sunken
+        )
         status = self.statusBar()
         status.setSizeGripEnabled(False)
         status.addPermanentWidget(self.sizeLabel)
@@ -306,7 +307,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fileOpenAction = self.create_action(
             "&Open...",
             self.file_open,
-            QKeySequence.Open,
+            QtGui.QKeySequence.Open,
             icon="folderopen.svg",
             tip="Open",
         )
@@ -351,7 +352,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Add the 'Label Options' menu bar items
         self.labelMenu = self.menuBar().addMenu("Label Options")
-        label_options_group = QActionGroup(self, exclusive=True)
+        label_options_group = QtWidgets.QActionGroup(self)
 
         # label_options is a ('Label Type', icon) tuple
         self.label_options = (
@@ -496,7 +497,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.interpolation_sub_menu = self.imageOptionsMenu.addMenu(
             "Interpolation method"
         )
-        interpolation_group = QActionGroup(self, exclusive=True)
+        interpolation_group = QtWidgets.QActionGroup(self)
         interpolation_options = (
             "none",
             "nearest",
@@ -536,7 +537,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         colorbar_sub_menu = self.imageOptionsMenu.addMenu("Colorbar")
         self.cb_removed = True
-        colorbar_group = QActionGroup(self, exclusive=True)
+        colorbar_group = QtWidgets.QActionGroup(self)
         colorbar_options = ("horizontal", "vertical", "hide")
         for cb in colorbar_options:
             self.colorbarActionDict[cb] = self.create_action(
@@ -556,7 +557,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         tick_sub_menu = self.imageOptionsMenu.addMenu("Ticks")
 
-        tick_group = QActionGroup(self, exclusive=True)
+        tick_group = QtWidgets.QActionGroup(self)
         tick_options = ("Show", "Hide", "Show X-Tick", "Show Y-Tick")
         self.ticks_removed = False
         for tick in tick_options:
@@ -579,7 +580,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Normalization
         self.normalization_sub_menu = self.imageOptionsMenu.addMenu("Normalize")
-        normalization_group = QActionGroup(self, exclusive=True)
+        normalization_group = QtWidgets.QActionGroup(self)
         norm_options = ("Linear", "Logarithmic", "Squared", "Square Root")
         for mode in norm_options:
             self.normalizationActionDict[mode] = self.create_action(
@@ -627,7 +628,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.colorMapMenu = self.menuBar().addMenu("Color Maps")
 
-        view_basic_color_group = QActionGroup(self, exclusive=True)
+        view_basic_color_group = QtWidgets.QActionGroup(self)
         self.colorMaps = (
             "gray",
             "Reds",
@@ -676,7 +677,7 @@ class MainWindow(QtWidgets.QMainWindow):
         all_sub_menu = self.colorMapMenu.addMenu("All")
 
         self.actionListAll = {}
-        view_all_color_group = QActionGroup(self, exclusive=True)
+        view_all_color_group = QtWidgets.QActionGroup(self)
         self.allColormaps = sorted(m for m in plt.cm.datad if not m.endswith("_r"))
         for color in self.allColormaps:
             self.actionListAll[color] = self.create_action(
@@ -714,7 +715,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.displayStylesMenu = self.menuBar().addMenu("Display Styles")
         styles_sub_menu = self.displayStylesMenu.addMenu("Styles")
-        styles_group = QActionGroup(self, exclusive=True)
+        styles_group = QtWidgets.QActionGroup(self)
         self.styles_options = ("Default", "Dark Orange", "Dark Blue", "Neon Lights")
         for style in self.styles_options:
             if style == "separator":
@@ -739,7 +740,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Layouts
         layout_sub_menu = self.displayStylesMenu.addMenu("Layouts")
-        layout_group = QActionGroup(self, exclusive=True)
+        layout_group = QtWidgets.QActionGroup(self)
         layout_options = (
             "Macintosh",
             "Windows",
@@ -780,7 +781,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.viewMenu = self.menuBar().addMenu("View Options")
         # ToolBar options (submenu)
         tool_bar_sub_menu = self.viewMenu.addMenu("Tool Bar")
-        tool_bar_group = QActionGroup(self, exclusive=True)
+        tool_bar_group = QtWidgets.QActionGroup(self)
         toolbar_options = ("Hide Toolbar", "Show Toolbar")
         for option in toolbar_options:
             if option == "separator":
@@ -805,7 +806,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Screen option (submenu)
         screen_option_sub_menu = self.viewMenu.addMenu("Screen Options")
-        screen_option_group = QActionGroup(self, exclusive=True)
+        screen_option_group = QtWidgets.QActionGroup(self)
         screen_options = ("Full Screen", "Normal", "Minimize", "Maximize")
         for screen in screen_options:
             if screen == "separator":
@@ -868,7 +869,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelActionList["Object Label"].setDisabled(True)
         self.labelActionList["Full Label"].setDisabled(True)
 
-        self.hold_slider_checkBox = QCheckBox("Hold Slider Positions")
+        self.hold_slider_checkBox = QtWidgets.QCheckBox("Hold Slider Positions")
         self.hold_slider_checkBox.setToolTip("Allows drilling into specific locations.")
         self.mainToolBar.addWidget(self.hold_slider_checkBox)
 
@@ -876,32 +877,40 @@ class MainWindow(QtWidgets.QMainWindow):
             self.mainToolBar, (self.lastCubeDataFileAction, self.nextCubeDataFileAction)
         )
 
-        self.tableLabel = QLabel("Band ")
+        self.tableLabel = QtWidgets.QLabel("Band ")
         self.tableLabel.setToolTip("Current Band Selected")
         self.tableLabel.setDisabled(True)
-        self.tableLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.tableNumDisplay = QLineEdit()
+        self.tableLabel.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
+        self.tableNumDisplay = QtWidgets.QLineEdit()
         self.tableNumDisplay.setMaxLength(7)
-        self.tableNumDisplay.setAlignment(Qt.AlignLeft)
+        self.tableNumDisplay.setAlignment(QtCore.Qt.AlignLeft)
         self.tableNumDisplay.setDisabled(True)
         self.tableNumDisplay.setFixedWidth(50)
-        self.tableNumDisplay.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.tableNumDisplay.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.tableNumDisplay.returnPressed.connect(self.table_num_line_edit_entry)
         self.tableNumDisplay.clear()
 
         self.mainToolBar.addWidget(self.tableLabel)
         self.mainToolBar.addWidget(self.tableNumDisplay)
 
-        self.dpiLabel = QLabel("dpi ")
+        self.dpiLabel = QtWidgets.QLabel("dpi ")
         self.dpiLabel.setToolTip("Dots per inch.")
         self.dpiLabel.setDisabled(True)
-        self.dpiLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.dpiDisplay = QLineEdit()
+        self.dpiLabel.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
+        self.dpiDisplay = QtWidgets.QLineEdit()
         self.dpiDisplay.setMaxLength(7)
-        self.dpiDisplay.setAlignment(Qt.AlignLeft)
+        self.dpiDisplay.setAlignment(QtCore.Qt.AlignLeft)
         self.dpiDisplay.setDisabled(True)
         self.dpiDisplay.setFixedWidth(50)
-        self.dpiDisplay.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.dpiDisplay.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.dpiDisplay.returnPressed.connect(self.dpi_line_edit_entry)
         self.tableNumDisplay.clear()
 
@@ -931,7 +940,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.mainToolBar.addSeparator()
 
-        self.rgb_combo = QComboBox()
+        self.rgb_combo = QtWidgets.QComboBox()
         self.rgb_combo.addItems(
             ["RGB", "Red", "Green", "Blue", "RedGreen", "RedBlue", "GreenBlue"]
         )
@@ -943,7 +952,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainToolBar.hide()
         self.initial_gray_scale_setting()
         self.setWindowTitle("PDSView")
-        self.setWindowIcon(QIcon(resource_path("./Icons/MagGlass.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("./Icons/MagGlass.png")))
 
         # Start off with the open dialog
         self.file_open()
@@ -1402,7 +1411,9 @@ class MainWindow(QtWidgets.QMainWindow):
         message_box.setWindowTitle("File Problem")
         message_box.exec_()
 
-    def pds_file_check(self, full_path):
+
+
+    def pds_file_check(self, full_path: list[str]) -> str:
         """
         Checks to see if the file has an extension (unfortunately PDS3 can use any extension they want a check for
         specific extensions cannot be made).  If the extension is .xml then the file is considered a PDS4 file and the
@@ -1411,7 +1422,10 @@ class MainWindow(QtWidgets.QMainWindow):
         :param full_path: full path to the file
         :return: full path the the file (original .xml or translated .xml)
         """
-        current_pds3_extensions = ["LBL", "IMG", "TAB", "DAT", "CSV"]
+        if not full_path:
+            return "problem with file"
+        file_path = Path(full_path[0])
+        current_pds3_extensions = [".LBL", ".IMG", ".TAB", ".DAT", ".CSV"]
         if self.platform == "Windows":
             fname = full_path.split("\\")[-1]
         else:
@@ -1420,22 +1434,25 @@ class MainWindow(QtWidgets.QMainWindow):
             self.file_message_box("Missing file extension in", fname)
             return "problem with file"
         # get the extension
-        extension = fname.split(".")[-1].upper()
-
-        if extension == "XML":
+        extension = file_path.suffix.upper()
+        print(extension)
+        if extension == ".XML":
             # print('Full Path: '.format(full_path))
-            return full_path
+            return full_path[0]
         elif extension in current_pds3_extensions:
-            translate = Translate.Translate(full_path)
+            translate = Translate.Translate(full_path[0])
             path_to_xml = translate.convert_to_pds4()
             # print("Path to xml")
             # print(path_to_xml)
             return path_to_xml
         else:
             self.file_message_box(
-                "Did not find a PDS3 extension that can  be translated in:", fname
+                "I Did not find a PDS3 extension that can  be translated in:", fname
             )
             return "problem with file"
+
+    def sample_open(self, fname):
+        print(fname)
 
     def file_open(self):
         """
@@ -1443,18 +1460,24 @@ class MainWindow(QtWidgets.QMainWindow):
         Configure functionality of various widgets
         :return:
         """
+        import sys
+        
         self.set_defaults()
         # Open File from menu bar
-        file_dialog = QtWidgets.QFileDialog(self, "Select .xml to access PDS data in files.")
-        file_dialog.setNameFilter("Xml file (*.xml)")
-        filename = file_dialog.getOpenFileNames()
-
-        file_with_path = self.pds_file_check(
-            map(str, filename)[0]
-        )  # map from QStringObject to list of one string.
-        if file_with_path == "problem with file":
-            self.file_open()  # call this function again
-
+        # file_dialog = QtWidgets.QFileDialog(
+        #     self, "Select .xml to access PDS data in files."
+        # )
+        # file_dialog.setFileMode(QtWidgets.QFileDialog.FileMode.Directory)
+        # file_dialog.setNameFilter("Xml file (*.xml)")
+        # filename = file_dialog.getOpenFileNames()
+        # print(filename)
+        # sys.exit(0)
+        # file_with_path = self.pds_file_check(
+        #     list(map(str, filename))[0]
+        # )  # map from QStringObject to list of one string.
+        # if file_with_path == "problem with file":
+        #     self.file_open()  # call this function again
+        file_with_path="/home/psoutham/src/JPL/data/_other_tools/transform-1.5.0/examples/Product_Table_Character.xml"
         self.mainToolBar.show()
         self.open_summary_gui(file_with_path)
         self.summaryTab.setDisabled(False)
@@ -1926,7 +1949,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelDockWidget.setObjectName("labelDockWidget")
         # Make the dock widget floatable, but not closeable
         self.labelDockWidget.setFeatures(
-            QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable
+            QtWidgets.QDockWidget.DockWidgetFloatable
+            | QtWidgets.QDockWidget.DockWidgetMovable
         )
 
         self.labelDockWidget.setAllowedAreas(
@@ -2318,7 +2342,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tableDockWidget.setAllowedAreas(QtCore.Qt.TopDockWidgetArea)
         # set the dock widget to be able to float, but not able to close
         self.tableDockWidget.setFeatures(
-            QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable
+            QtWidgets.QDockWidget.DockWidgetFloatable
+            | QtWidgets.QDockWidget.DockWidgetMovable
         )
 
         self.tableDockWidget.featuresChanged.connect(self.table_dock_changed)
@@ -2593,7 +2618,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.imageDockWidget.setObjectName("imageDockWidget")
             # Make the dock widget floatable, but not closeable
             self.imageDockWidget.setFeatures(
-                QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable
+                QtWidgets.QDockWidget.DockWidgetFloatable
+                | QtWidgets.QDockWidget.DockWidgetMovable
             )
 
             self.imageDockWidget.setWidget(self.imageWidget)
@@ -2923,7 +2949,7 @@ class LabelFrame(QtWidgets.QWidget, QtCore.QObject):
 
         self.tree.setHeaderHidden(True)
 
-        if displayType is not "full_label":
+        if displayType != "full_label":
             self.tree.expandAll()
 
         # set up a selection model
@@ -3501,7 +3527,9 @@ class ItemTable(QtWidgets.QTableView):
 
     # This is used for copying and pasting elements in the table
     def eventFilter(self, source, event):
-        if event.type() == QtCore.QEvent.KeyPress and event.matches(QtGui.QKeySequence.Copy):
+        if event.type() == QtCore.QEvent.KeyPress and event.matches(
+            QtGui.QKeySequence.Copy
+        ):
             self.copy_selection()
             return True
         return super(ItemTable, self).eventFilter(source, event)

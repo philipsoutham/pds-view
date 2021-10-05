@@ -41,14 +41,14 @@ Copyright (c) 2009 Ryan Matthew Balfanz. All rights reserved.
 # In Python 2.5,
 # the with statement is only allowed when the with_statement feature has been enabled.
 # It will always be enabled in Python 2.6.
-from __future__ import with_statement, print_function
+
 
 import logging
 import sys
 import unittest
 
 # from common import open_pds
-from reader import Reader
+from .reader import Reader
 
 
 class ParserError(Exception):
@@ -160,9 +160,9 @@ class Parser_jh(object):
 
     def remove_double_quotes(self, d):
         """Remove double quotes from the output."""
-        for key, val in d.iteritems():
+        for key, val in d.items():
             if isinstance(val, dict):
-                for k, v in val.iteritems():
+                for k, v in val.items():
                     if '"' in v:
                         d[key] = v.replace('"', '')
             else:
@@ -173,7 +173,7 @@ class Parser_jh(object):
     def strip_dict(self, d):
         """Remove whitespace between all elements of the dictionary."""
         return {key: self.strip_dict(value) if isinstance(value, dict) else value.strip()
-                for key, value in d.items()}
+                for key, value in list(d.items())}
 
     def _parse_header(self, source):
         """Parse the PDS header.
@@ -183,8 +183,8 @@ class Parser_jh(object):
         """
         if self.log: self.log.debug('Parsing header')
         CONTAINERS = {'OBJECT': 'END_OBJECT', 'GROUP': 'END_GROUP'}
-        CONTAINERS_START = CONTAINERS.keys()
-        CONTAINERS_END = CONTAINERS.values()
+        CONTAINERS_START = list(CONTAINERS.keys())
+        CONTAINERS_END = list(CONTAINERS.values())
 
         root = ParserNode({}, None)
         currentNode = root
@@ -240,7 +240,7 @@ class ParserTests(unittest.TestCase):
         """Check that all test files are parsed without any Exception"""
         import os
 
-        from common import open_pds
+        from .common import open_pds
 
         test_data_dir = '../../../test_data/'
         pds_parser = Parser(log="Parser_Unit_Tests")
@@ -250,7 +250,7 @@ class ParserTests(unittest.TestCase):
                 try:
                     labels = pds_parser.parse(open_pds(filename))
                 # labels = pdsparser.labels # Old usage, depriciated.
-                except Exception, e:
+                except Exception as e:
                     # Re-raise the exception, causing this test to fail.
                     raise
                 else:
@@ -261,12 +261,12 @@ class ParserTests(unittest.TestCase):
 if __name__ == '__main__':
     # unittest.main()
 
-    from common import open_pds
+    from .common import open_pds
 
     filename = '../../../testfiles/FHA01118.LBL'
     pds_parser = Parser()
     labels = pds_parser.parse(open_pds(filename))
     # labels = pds_parser.labels # Old usage, depriciated.
     print("Label Keys")
-    print(labels.keys())
+    print(list(labels.keys()))
 
