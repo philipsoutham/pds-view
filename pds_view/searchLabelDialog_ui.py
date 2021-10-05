@@ -1,4 +1,4 @@
-# Copyright (c) 2019, California Institute of Technology ("Caltech").  
+# Copyright (c) 2019, California Institute of Technology ("Caltech").
 # U.S. Government sponsorship acknowledged.
 #
 # All rights reserved.
@@ -36,35 +36,30 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
+# try:
+#     _fromUtf8 = QtCore.QString.fromUtf8
+# except AttributeError:
+#     def _fromUtf8(s):
+#         return s
 
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_SearchLabelDialog(object):
-    def setupUi(self, SearchLabelDialog):
-        SearchLabelDialog.setObjectName(_fromUtf8("SearchLabelDialog"))
+    def setupUi(self, SearchLabelDialog: QtWidgets.QDialog):
+        SearchLabelDialog.setObjectName("SearchLabelDialog")
         SearchLabelDialog.setWindowModality(QtCore.Qt.NonModal)
         SearchLabelDialog.resize(649, 519)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(1)
         sizePolicy.setHeightForWidth(SearchLabelDialog.sizePolicy().hasHeightForWidth())
         SearchLabelDialog.setSizePolicy(sizePolicy)
         SearchLabelDialog.setMaximumSize(QtCore.QSize(10000, 10000))
         font = QtGui.QFont()
-        font.setFamily(_fromUtf8("Helvetica"))
+        font.setFamily("Helvetica")
         font.setPointSize(14)
         font.setBold(False)
         font.setItalic(False)
@@ -72,63 +67,71 @@ class Ui_SearchLabelDialog(object):
         SearchLabelDialog.setFont(font)
         SearchLabelDialog.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         SearchLabelDialog.setModal(True)
-        self.gridLayout = QtGui.QGridLayout(SearchLabelDialog)
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.horizontal_line_top = QtGui.QFrame(SearchLabelDialog)
-        self.horizontal_line_top.setFrameShape(QtGui.QFrame.HLine)
-        self.horizontal_line_top.setFrameShadow(QtGui.QFrame.Sunken)
-        self.horizontal_line_top.setObjectName(_fromUtf8("horizontal_line_top"))
+        self.gridLayout = QtWidgets.QGridLayout(SearchLabelDialog)
+        self.gridLayout.setObjectName("gridLayout")
+        self.horizontal_line_top = QtWidgets.QFrame(SearchLabelDialog)
+        self.horizontal_line_top.setFrameShape(QtWidgets.QFrame.HLine)
+        self.horizontal_line_top.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.horizontal_line_top.setObjectName("horizontal_line_top")
         self.gridLayout.addWidget(self.horizontal_line_top, 7, 0, 1, 3)
-        self.value_label = QtGui.QLabel(SearchLabelDialog)
-        self.value_label.setObjectName(_fromUtf8("value_label"))
+        self.value_label = QtWidgets.QLabel(SearchLabelDialog)
+        self.value_label.setObjectName("value_label")
         self.gridLayout.addWidget(self.value_label, 1, 0, 1, 1)
-        self.value_line_edit = QtGui.QLineEdit(SearchLabelDialog)
+        self.value_line_edit = QtWidgets.QLineEdit(SearchLabelDialog)
         font = QtGui.QFont()
         font.setItalic(False)
         self.value_line_edit.setFont(font)
-        self.value_line_edit.setToolTip(_fromUtf8(""))
-        self.value_line_edit.setObjectName(_fromUtf8("value_line_edit"))
+        self.value_line_edit.setToolTip("")
+        self.value_line_edit.setObjectName("value_line_edit")
         self.gridLayout.addWidget(self.value_line_edit, 3, 0, 1, 2)
-        self.results_label = QtGui.QLabel(SearchLabelDialog)
-        self.results_label.setObjectName(_fromUtf8("results_label"))
+        self.results_label = QtWidgets.QLabel(SearchLabelDialog)
+        self.results_label.setObjectName("results_label")
         self.gridLayout.addWidget(self.results_label, 8, 0, 1, 1)
-        self.search_button = QtGui.QPushButton(SearchLabelDialog)
-        self.search_button.setObjectName(_fromUtf8("search_button"))
+        self.search_button = QtWidgets.QPushButton(SearchLabelDialog)
+        self.search_button.setObjectName("search_button")
         self.gridLayout.addWidget(self.search_button, 20, 2, 1, 1)
-        self.cancel_button = QtGui.QPushButton(SearchLabelDialog)
-        self.cancel_button.setObjectName(_fromUtf8("cancel_button"))
+        self.cancel_button = QtWidgets.QPushButton(SearchLabelDialog)
+        self.cancel_button.setObjectName("cancel_button")
         self.gridLayout.addWidget(self.cancel_button, 20, 1, 1, 1)
-        self.results_textEdit = QtGui.QTextEdit(SearchLabelDialog)
-        self.results_textEdit.setObjectName(_fromUtf8("results_textEdit"))
+        self.results_textEdit = QtWidgets.QTextEdit(SearchLabelDialog)
+        self.results_textEdit.setObjectName("results_textEdit")
         self.gridLayout.addWidget(self.results_textEdit, 17, 0, 1, 3)
-        self.line_2 = QtGui.QFrame(SearchLabelDialog)
-        self.line_2.setFrameShape(QtGui.QFrame.HLine)
-        self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
-        self.line_2.setObjectName(_fromUtf8("line_2"))
+        self.line_2 = QtWidgets.QFrame(SearchLabelDialog)
+        self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_2.setObjectName("line_2")
         self.gridLayout.addWidget(self.line_2, 18, 0, 1, 3)
-        self.case_sensitive_check_box = QtGui.QCheckBox(SearchLabelDialog)
+        self.case_sensitive_check_box = QtWidgets.QCheckBox(SearchLabelDialog)
         self.case_sensitive_check_box.setChecked(True)
-        self.case_sensitive_check_box.setObjectName(_fromUtf8("case_sensitive_check_box"))
+        self.case_sensitive_check_box.setObjectName("case_sensitive_check_box")
         self.gridLayout.addWidget(self.case_sensitive_check_box, 3, 2, 1, 1)
 
         self.retranslateUi(SearchLabelDialog)
         QtCore.QMetaObject.connectSlotsByName(SearchLabelDialog)
 
-    def retranslateUi(self, SearchLabelDialog):
-        SearchLabelDialog.setWindowTitle(_translate("SearchLabelDialog", "Find Text in Currently Selected Label", None))
-        self.value_label.setText(_translate("SearchLabelDialog", "Search for:", None))
-        self.results_label.setText(_translate("SearchLabelDialog", "Results", None))
-        self.search_button.setText(_translate("SearchLabelDialog", "Search", None))
-        self.cancel_button.setText(_translate("SearchLabelDialog", "Done", None))
-        self.case_sensitive_check_box.setText(_translate("SearchLabelDialog", "  Case Sensitive", None))
+    def retranslateUi(self, SearchLabelDialog: QtWidgets.QDialog):
+        # TODO: text translation
+        # translator = QtCore.QTranslator(SearchLabelDialog)
+        # SearchLabelDialog.setWindowTitle(translator.translate("SearchLabelDialog", "Find Text in Currently Selected Label", None))
+        SearchLabelDialog.setWindowTitle("Find Text in Currently Selected Label")
+        # self.value_label.setText(translator.translate("SearchLabelDialog", "Search for:", None))
+        self.value_label.setText("Search for:")
+        # self.results_label.setText(translator.translate("SearchLabelDialog", "Results", None))
+        self.results_label.setText("Results")
+        # self.search_button.setText(translator.translate("SearchLabelDialog", "Search", None))
+        self.search_button.setText("Search")
+        # self.cancel_button.setText(translator.translate("SearchLabelDialog", "Done", None))
+        self.cancel_button.setText("Done")
+        # self.case_sensitive_check_box.setText(translator.translate("SearchLabelDialog", "  Case Sensitive", None))
+        self.case_sensitive_check_box.setText("  Case Sensitive")
 
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
-    SearchLabelDialog = QtGui.QDialog()
+
+    app = QtWidgets.QApplication(sys.argv)
+    SearchLabelDialog = QtWidgets.QDialog()
     ui = Ui_SearchLabelDialog()
     ui.setupUi(SearchLabelDialog)
     SearchLabelDialog.show()
     sys.exit(app.exec_())
-

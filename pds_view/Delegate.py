@@ -1,4 +1,4 @@
-# Copyright (c) 2019, California Institute of Technology ("Caltech").  
+# Copyright (c) 2019, California Institute of Technology ("Caltech").
 # U.S. Government sponsorship acknowledged.
 #
 # All rights reserved.
@@ -30,7 +30,8 @@
 
 # Delegate.py - modified controller model
 # import os
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
+# TODO: do we need the following line?
 Qt = QtCore.Qt
 
 # Delegate to control custom overwritting of columns in tables
@@ -38,14 +39,16 @@ Qt = QtCore.Qt
 # will be obvious in the table
 # class BackgroundColorDelegate()
 
-class GroupDelegate(QtGui.QItemDelegate):
+
+class GroupDelegate(QtWidgets.QItemDelegate):
     """
     A delegate that repaints groups in tables with a new background color
     This allows the groups to be obvious in the table display
     """
-    def __init__(self, parent = None, bg_color = None):
+
+    def __init__(self, parent: QtCore.QObject = None, bg_color=None):
         self.bg = bg_color
-        QtGui.QItemDelegate.__init__(self, parent)
+        super().__init__(parent)
 
     def paint(self, painter, option, index):
         painter.save()

@@ -193,7 +193,7 @@ class Reader(object):
             dataStartIndex = recIndx + 1
             try:
                 dataEndIndex = recordIndicies[i + 1] - 1
-            except IndexError, e:
+            except IndexError as e:
                 errorMessage = 'i: %d, Number of tokens: %d' % (i, len(tokens))
                 assert i == (len(recordIndicies) - 1), errorMessage
                 dataEndIndex = len(tokens) - 1
@@ -236,7 +236,7 @@ class ReaderTests(unittest.TestCase):
                     for record in pdsreader.read(open_pds(filename)):
                         # print record
                         pass
-                except Exception, e:
+                except Exception as e:
                     # Re-raise the exception, causing this test to fail.
                     raise
                 else:

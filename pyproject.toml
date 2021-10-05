@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "pds-view"
+version = "0.1.0"
+description = ""
+authors = ["Philip Southam <philip.southam@jpl.nasa.gov>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+PyQt5 = "^5.15.4"
+airspeed = "^0.5.17"
+Pillow = "^8.3.2"
+matplotlib = "^3.4.3"
+seaborn = "^0.11.2"
+PyQt6 = "^6.2.0"
+
+[tool.poetry.dev-dependencies]
+black = "^21.9b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

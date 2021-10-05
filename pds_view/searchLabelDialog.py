@@ -1,4 +1,4 @@
-# Copyright (c) 2019, California Institute of Technology ("Caltech").  
+# Copyright (c) 2019, California Institute of Technology ("Caltech").
 # U.S. Government sponsorship acknowledged.
 #
 # All rights reserved.
@@ -28,22 +28,21 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import re
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-import numpy as np
+import sys
+
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 import searchLabelDialog_ui
 
-MAC = True
-try:
-    from PyQt4.QtGui import qt_mac_set_native_menubar
-except ImportError:
-    MAC = False
+# TODO: why
+MAC = sys.platform.startswith("darwin")
+# try:
+#     from PyQt4.QtGui import qt_mac_set_native_menubar
+# except ImportError:
+#     MAC = False
 
 
-class SearchLabelDialog(QDialog, searchLabelDialog_ui.Ui_SearchLabelDialog):
-
+class SearchLabelDialog(QtWidgets.QDialog, searchLabelDialog_ui.Ui_SearchLabelDialog):
     def __init__(self, label_dict, label_widget, parent=None):
         super(SearchLabelDialog, self).__init__(parent)
         self.setupUi(self)
@@ -56,7 +55,7 @@ class SearchLabelDialog(QDialog, searchLabelDialog_ui.Ui_SearchLabelDialog):
         # print(dict)
 
         self.matches = []
-        self.value = ''
+        self.value = ""
 
         # Callbacks for buttons clicked
         self.cancel_button.clicked.connect(self.reject)
@@ -64,18 +63,20 @@ class SearchLabelDialog(QDialog, searchLabelDialog_ui.Ui_SearchLabelDialog):
 
         # print('instantiated label dialog')
 
-    @pyqtSlot()
+    @QtCore.pyqtSlot()
     def handle_search_clicked(self):
         # decide if it is a single value search or a range search
-        if self.value_line_edit.text() == '':
-            results = 'Nothing entered.'
-            QMessageBox.information(self, 'Enter a value to search for', results)
+        if self.value_line_edit.text() == "":
+            results = "Nothing entered."
+            QtWidgets.QMessageBox.information(
+                self, "Enter a value to search for", results
+            )
             return
         else:
             self.handle_search()
             return
 
-    @pyqtSlot()
+    @QtCore.pyqtSlot()
     def handle_search(self):
         self.value = self.value_line_edit.text()
         case_sensitive = True
@@ -123,22 +124,22 @@ class SearchLabelDialog(QDialog, searchLabelDialog_ui.Ui_SearchLabelDialog):
         self.results_textEdit.clear()
         if found:
             results = 'Found %d matches for value "%s".' % (num_found, str(self.value))
-            self.results_textEdit.insertPlainText(results + '\n')
+            self.results_textEdit.insertPlainText(results + "\n")
             for i in found:
                 heading = i[0]
-                self.results_textEdit.setTextColor(QColor(150, 25, 0))
-                self.results_textEdit.insertPlainText(heading + '\n')
-                for j in range(len(i)-1):
-                    if j == heading:  # the match was in the heading so don't print it as another match
+                self.results_textEdit.setTextColor(QtGui.QColor(150, 25, 0))
+                self.results_textEdit.insertPlainText(heading + "\n")
+                for j in range(len(i) - 1):
+                    if (
+                        j == heading
+                    ):  # the match was in the heading so don't print it as another match
                         continue
-                    self.results_textEdit.setTextColor(QColor(0, 25, 150))
-                    self.results_textEdit.insertPlainText('    ' + i[j+1] + '\n')
-                self.results_textEdit.setTextColor(QColor(0, 0, 0))
-
+                    self.results_textEdit.setTextColor(QtGui.QColor(0, 25, 150))
+                    self.results_textEdit.insertPlainText("    " + i[j + 1] + "\n")
+                self.results_textEdit.setTextColor(QtGui.QColor(0, 0, 0))
 
                 # Write results to the textEdit widget
 
         else:
             results = 'No matches found for: "%s".' % str(self.value)
-            QMessageBox.information(self, 'Search Results', results)
-
+            QtWidgets.QMessageBox.information(self, "Search Results", results)

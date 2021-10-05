@@ -39,7 +39,7 @@ Copyright (c) 2009 Ryan Matthew Balfanz. All rights reserved.
 # In Python 2.5,
 # the with statement is only allowed when the with_statement feature has been enabled.
 # It will always be enabled in Python 2.6.
-from __future__ import with_statement
+
 
 import logging
 import sys
@@ -162,8 +162,8 @@ class Parser(object):
         """
         if self.log: self.log.debug('Parsing header')
         CONTAINERS = {'OBJECT': 'END_OBJECT', 'GROUP': 'END_GROUP'}
-        CONTAINERS_START = CONTAINERS.keys()
-        CONTAINERS_END = CONTAINERS.values()
+        CONTAINERS_START = list(CONTAINERS.keys())
+        CONTAINERS_END = list(CONTAINERS.values())
 
         root = ParserNode({}, None)
         currentNode = root
@@ -213,7 +213,7 @@ class ParserTests(unittest.TestCase):
                 try:
                     labels = pdsparser.parse(open_pds(filename))
                 # labels = pdsparser.labels # Old usage, depriciated.
-                except Exception, e:
+                except Exception as e:
                     # Re-raise the exception, causing this test to fail.
                     raise
                 else:
@@ -226,9 +226,9 @@ if __name__ == '__main__':
 
     from common import open_pds
 
-    filename = '../../../test_data/FHA01118.LBL'
+    filename = '/srv/nfs_share_code/JPL/pds/data/atmospheres/cors_0022/sce1_164/rsr/c32easc2002_164_1626x25x25d.lbl'
     pdsparser = Parser()
     labels = pdsparser.parse(open_pds(filename))
     # labels = pdsparser.labels # Old usage, depriciated.
-    print labels.keys()
-    print labels['IMAGE END']
+    print(list(labels.keys()))
+    print(labels['IMAGE END'])
