@@ -34,7 +34,7 @@ from collections import Counter
 from .reader import read_pds3_header
 
 
-def parse_for_multiple_ids(data: typing.BinaryIO):
+def parse_for_multiple_ids(data: typing.BinaryIO) -> list[str]:
     """Looking for duplicate keys under a heading.
     e.g. {"TABLE": {"COLUMN": .....}, {"COLUMN": .....}}
     """

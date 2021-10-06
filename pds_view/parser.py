@@ -40,7 +40,7 @@ _CONTAINERS_END = list(_CONTAINERS.values())
 class _ParserNode:
     """A tree-like node structure to maintain structure within PDS labels."""
 
-    def __init__(self, children:dict=None, parent: "_ParserNode"=None):
+    def __init__(self, children: dict = None, parent: "_ParserNode" = None):
         if not children:
             children = {}
 
@@ -48,59 +48,52 @@ class _ParserNode:
         self.parent = parent
 
 
-class Parser_jh:
-    class _ParserNode:
-        """A tree-like node structure to maintain structure within PDS labels."""
-
-        def __init__(self, children=None, parent=None):
-            if not children:
-                children = {}
-
-            self.children = children
-            self.parent = parent
-
-    def __init__(self, duplicate_ids: list[str]) -> None:
-        super().__init__()
-
-    def parse(self, data: typing.BinaryIO):
-        self._parse_header(data)
-
-    def _parse_header(self, data: typing.BinaryIO):
-        root = self._ParserNode()
-        current_node = root
-        expected_end_queue = []
-        columns = []
+def _remove_double_quotes(children: dict) -> dict:
+    for (k1, v1) in children.items():
+        if isinstance(v1, dict):
+            children[k1] = _remove_double_quotes(v1)
+        if isinstance(v1, list):
+            children[k1] = [_remove_double_quotes(v) for v in v1]
+        elif isinstance(v1, str):
+            if '"' in v1:
+                children[k1] = v1.replace('"', "").strip()
+    return children
 
 
-def parse_jh(data: typing.BinaryIO, dup_ids=None):
+def parse_jh(data: typing.BinaryIO, dup_ids=None) -> dict[str, typing.Union[str, dict]]:
     root = _ParserNode()
     current_node = root
     expected_end_queue = deque()
     columns = []
-
+    key_ = None
     for (k, v) in map(lambda x: (x[0].strip(), x[1].strip()), read_pds3_header(data)):
         if k in _CONTAINERS_START:
             expected_end_queue.append((_CONTAINERS[k], v))
-            current_node =  _ParserNode({}, current_node)
+            current_node = _ParserNode({}, current_node)
         elif k in _CONTAINERS_END:
             try:
                 expected_end_queue.pop()
                 new_parent = current_node.parent
                 new_parent.children[v] = current_node.children
                 if dup_ids and v in dup_ids:
+                    key_ = v
                     holder = dict(new_parent.children[v])
                     columns.append(holder)
                 current_node = new_parent
             except IndexError:
                 assert current_node.parent is None, "Parent node is not None."
         else:
-            assert not k.startswith('END_'), f"Detected a possible uncaught nesting {k}"
+            assert not k.startswith("END_"), f"Detected a possible uncaught nesting {k}"
             current_node.children[k] = v
-    assert not expected_end_queue, f"Detected hanging chads, very gory...{expected_end_queue}"
+    assert (
+        not expected_end_queue
+    ), f"Detected hanging chads, very gory...{expected_end_queue}"
 
-    assert current_node.parent is None, 'Parent is not None, did not make it back up the tree'
-    
-    print(root.children["TABLE"])
+    assert (
+        current_node.parent is None
+    ), "Parent is not None, did not make it back up the tree"
 
-    # if 'TABLE'
+    if "TABLE" in root.children:
+        root.children["TABLE"][key_] = columns
 
+    return _remove_double_quotes(root.children)

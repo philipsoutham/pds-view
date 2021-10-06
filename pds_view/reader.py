@@ -50,7 +50,7 @@ def read_pds3_header(data: typing.BinaryIO):
 
         return []
 
-    tokens: list[bytes] = list(map(lambda x: x.decode(),
+    tokens: list[bytes] = list(map(lambda x: x.decode("utf-8", "ignore"),
         itertools.chain.from_iterable(map(_line_filter, map(lambda x: x.strip(), data)))
     ))
 
