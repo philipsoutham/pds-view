@@ -1,19 +1,10 @@
-import typing
+# import typing
 import dataclasses
+
+
 from pds4_tools.reader import pds4_read
 from pds4_tools.reader.general_objects import Structure
 
-
-# class StructureSummary(typing.NamedTuple):
-#     id: str
-#     type: str
-#     is_header: bool
-#     dimensions: str
-
-
-# class ItemSummary(typing.NamedTuple):
-#     title: str
-#     structure_summary: list[StructureSummary]
 
 
 @dataclasses.dataclass(frozen=True)

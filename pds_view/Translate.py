@@ -35,7 +35,7 @@ import ntpath
 
 import sys
 
-sys.path.append("..")
+# sys.path.append("..")
 
 from airspeed import CachingFileLoader
 from .pds.core.common import open_pds
