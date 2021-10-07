@@ -1,35 +1,112 @@
-{%- for key_ in ptr_object_map -%}
-<File_Area_Observational>
-    <File>
-        <file_name>{{key_}}</file_name>
-    </File>
-    {% for object_name in ptr_object_map[key_] -%}
-    {%- set obj_ = label[object_name] -%}
-    {%- if object_name == "IMAGE" -%}
-    {%- elif object_name in ("TABLE", "SERIES") -%}
-        {%- set table_type = "" -%}
-        {%- set table_type = "" -%}
-        {%- if obj_.INTERCHANGE_FORMAT == "ASCII" -%}
-            {%- set table_type = "Table_Character" -%}
-        {%- else -%}
-            {%- set table_type = "Table_Binary" -%}
+{%- macro get_tbl_data_type(col, field_type, bytes_) %}
+    {%- for (k,v) in tbl_data_types.items() -%}
+        {%- if field_type in k[0] and col.DATA_TYPE in k[1] -%}
+        <data_type>{{v[bytes_]}}</data_type>
         {%- endif -%}
-    <{{table_type}}>
-        <local_identifier>{{object_placeholder}}</local_identifier>
-        <offset unit="byte">{{ptr_offset_map[key_][loop.index0]}}</offset>
-        <records>{{obj_.ROWS}}</records>
-        {%- set record_type = "" -%}
-        {% if table_type == "Table_Character" -%}
-        <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
-        {%- set record_type = "Record_Character" -%}
-        {%- else -%}
-        {%- set record_type = "Record_Binary" -%}
-        {%- endif %}
-        <{{record_type}}>
-            <fields>$totalColumns</fields>
-        </{{record_type}}>
-    </{{table_type}}>
-    {%- endif -%}
-    {%- endfor %}
-</File_Area_Observational>
+    {%- endfor -%}
+{%- endmacro -%}
+{%- macro get_img_data_type(obj_) %}
+    {%- for (k,v) in img_data_types.items() -%}
+        {%- if obj_.SAMPLE_TYPE in k -%}
+        <data_type>{{v[obj_.SAMPLE_BITS]}}</data_type>
+        {%- endif -%}
+    {%- endfor -%}
+{%- endmacro -%}
+{%- macro map_column(col, field_type, group_type) %}
+                <{{field_type}}>
+                    <name>{{col.NAME|lower}}</name>
+                    <field_location unit="byte">{{col.START_BYTE}}</field_location>
+                    {{get_tbl_data_type(col, field_type, col.BYTES)}}
+                    <field_length unit="byte">{{col.BYTES}}</field_length>
+                </{{field_type}}>
+{%- endmacro -%}
+{%- macro map_image(obj_, data_file_offset) %}
+{#- TODO: what happens when bands are different than 2
+say 1 like https://sbnarchive.psi.edu/pds3/dawn/fc/DWNCAFC2_1A/DATA/FITS/20141226_APPROACH/20150204_SATELLITE_SEARCH_1A/FC21A0032850_15035061411F1H.LBL
+or >= 3 like https://pds-smallbodies.astro.umd.edu/holdings/nh-p-leisa-2-pluto-v3.0/calib/0030594839/anglemap.lbl
+is there a mapping to axes, what type of array image is a band with a value of 1
+-#}
+        <Array_2D_Image>
+            <local_identifier>{{object_placeholder}}</local_identifier>
+            <offset unit="byte">{{data_file_offset}}</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                {{get_img_data_type(obj_)}}
+            </Element_Array>
+            {#- TODO: handle "Array_3D_Spectrum" and "Array_3D_Image".
+            No current examples available. Also verify the following for 2d
+            images
+            #}
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>{{obj_.LINES}}</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Sample</axis_name>
+                <elements>{{obj_.LINE_SAMPLES}}</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+        </Array_2D_Image>
+        
+{%- endmacro -%}
+{%- for key_ in ptr_object_map %}
+    <File_Area_Observational>
+        <File>
+            <file_name>{{key_}}</file_name>
+        </File>
+        {% for object_name in ptr_object_map[key_] -%}
+        {%- set obj_ = label[object_name] -%}
+        {%- if object_name == "IMAGE" -%}
+        {{map_image(obj_, ptr_offset_map[key_][loop.index0])}}
+        {%- elif object_name in ("TABLE", "SERIES") -%}
+            {%- set table_type = "" -%}
+            {%- if obj_.INTERCHANGE_FORMAT == "ASCII" -%}
+                {%- set table_type = "Table_Character" -%}
+            {%- else -%}
+                {%- set table_type = "Table_Binary" -%}
+            {%- endif -%}
+        <{{table_type}}>
+            <local_identifier>{{object_placeholder}}</local_identifier>
+            <offset unit="byte">{{ptr_offset_map[key_][loop.index0]}}</offset>
+            <records>{{obj_.ROWS}}</records>
+            {%- set record_type = "" -%}
+            {% if table_type == "Table_Character" -%}
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+            {%- set record_type = "Record_Character" -%}
+            {%- set field_type = "Field_Character" -%}
+            {%- set group_type = "Group_Field_Character" -%}
+            {%- else -%}
+            {%- set record_type = "Record_Binary" -%}
+            {%- set field_type = "Field_Binary" -%}
+            {%- set group_type = "Group_Field_Binary" -%}
+            {%- endif %}
+            <{{record_type}}>
+                <fields>
+                {#- TODO: why was this harcoded to 3 in the .vm template -#}
+                {%- if object_name == "TABLE" -%}
+                {{label[object_name].get("COLUMNS","3")}}
+                {%- else -%}
+                3
+                {%- endif -%}
+                </fields>
+                {#- TODO: is this always supposed to be 0 -#}
+                <groups>0</groups>
+                {% set row_bytes = obj_.ROW_BYTES|int -%}
+                {%- if obj_.ROW_PREFIX_BYTES -%}
+                {% set row_bytes = (obj_.ROW_PREFIX_BYTES|int) + row_bytes -%}
+                {%- endif -%}
+                {%- if obj_.ROW_SUFFIX_BYTES -%}
+                {% set row_bytes = (obj_.ROW_SUFFIX_BYTES|int) + row_bytes -%}
+                {%- endif -%}
+                <record_length unit="byte">{{row_bytes}}</record_length>
+                {%- for col in obj_.get("COLUMN",[]) -%}
+                {{ map_column(col, field_type, group_type) }}
+                {%- endfor %}
+            </{{record_type}}>
+        </{{table_type}}>
+        {%- endif -%}
+        {%- endfor %}
+    </File_Area_Observational>
 {%- endfor %}

@@ -2,6 +2,9 @@
 <Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1" xmlns:pds="http://pds.nasa.gov/pds4/pds/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 {% include "1_identification_area.xml.j2" with context %}
 {% include "2_observation_area.xml.j2" with context %}
+{#-
+translation doesn't seem to include this
 {% include "3_reference_list.xml.j2" with context %}
+-#}
 {% include "4_file_area_observational.xml.j2" with context %}
 </Product_Observational>

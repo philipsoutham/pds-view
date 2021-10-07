@@ -34,9 +34,10 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
-from airspeed import CachingFileLoader
+# from airspeed import CachingFileLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from pds_view import resource_path
+# from . import resource_path
 
 from .parse_duplicate_ids import parse_for_multiple_ids
 from .parser import parse_jh
@@ -122,49 +123,211 @@ def _convert_to_pds4(file_: Path, labels: dict[str, typing.Union[str, dict]]):
             ptr_object_dict[pointer_fname].append(associated_object)
             ptr_offset_dict[pointer_fname].append(int(offset))
 
-    # loader = CachingFileLoader(resource_path("./templates"))
-    # template = loader.load_template("inspectTemplate.vm")
+    # todo: see if this needs to be cleaned up in favor 
+    # of less logic in the templates
     map_ = {
         "label": labels,
-        # "str": str,
         "generate": generate,
         "ptr_object_map": dict(ptr_object_dict),
         "ptr_offset_map": dict(ptr_offset_dict),
         "object_placeholder": object_type,
+        "tbl_data_types": _tbl_data_types,
+        "img_data_types": _img_data_types,
     }
-    # out = template.merge(map_, loader=loader)
-    # dom = xml.dom.minidom.parseString(out)
-    # pds4_xml = os.linesep.join(
-    #     [
-    #         s
-    #         for s in xml.dom.minidom.parseString(template.merge(map_, loader=loader))
-    #         .toprettyxml()
-    #         .splitlines()
-    #         if s.strip()
-    #     ]
-    # )
-    # print(pds4_xml)
-
-    j2_loader = FileSystemLoader("pds_view/templates/j2")
-    env = Environment(loader=j2_loader, autoescape=select_autoescape())
-    template = env.get_template("0_base.xml.j2")
-    print(template.render(**map_))
-    
     # TODO: write file here
+    print(_jinja_template.render(**map_))
+    # from pprint import pprint
+    # pprint(labels)
+    
 
+_jinja_env = Environment(loader=FileSystemLoader("pds_view/templates/j2"), autoescape=select_autoescape())
+_jinja_template = _jinja_env.get_template("0_base.xml.j2")
 
-import xml.dom.minidom
-import os
-from jinja2 import Environment, PackageLoader, FileSystemLoader, select_autoescape
+_img_data_types = {
+    ("MSB_INTEGER", "INTEGER", "SUN_INTEGER", "MAC_INTEGER"): {
+        "8": "SignedByte",
+        "16": "SignedMSB2",
+        "32": "SignedMSB4",
+    },
+    (
+        "MSB_UNSIGNED_INTEGER",
+        "SUN_UNSIGNED_INTEGER",
+        "MAC_UNSIGNED_INTEGER",
+        "UNSIGNED_INTEGER",
+    ): {
+        "8": "UnsignedByte",
+        "16": "UnsignedMSB2",
+        "32": "UnsignedMSB4",
+    },
+    ("LSB_INTEGER", "PC_INTEGER", "VAX_INTEGER"): {
+        "8": "SignedByte",
+        "16": "SignedLSB2",
+        "32": "SignedLSB4",
+    },
+    ("LSB_UNSIGNED_INTEGER", "PC_UNSIGNED_INTEGER", "VAX_UNSIGNED_INTEGER"): {
+        "8": "UnsignedByte",
+        "16": "UnsignedLSB2",
+        "32": "UnsignedLSB4",
+    },
+    (
+        "IEEE_REAL",
+        "FLOAT",
+        "REAL",
+        "MAC_REAL",
+        "SUN_REAL",
+        "VAX_REAL",
+        "VAXG_REAL",
+        "VAX_DOUBLE",
+    ): {
+        "4": "IEEE754MSBSingle",
+        "8": "IEEE754MSBDouble",
+    },
+    ("PC_REAL",): {
+        "4": "IEEE754LSBSingle",
+        "8": "IEEE754LSBDouble",
+    },
+    ("PC_COMPLEX",): {
+        "1": "ComplexLSB8",
+        "2": "ComplexLSB16",
+    },
+    ("VAX_COMPLEX", "VAXG_COMPLEX"): {
+        "8": "ComplexMSB8",
+        "16": "ComplexMSB16",
+    },
+    ("MSB_BIT_STRING", "LSB_BIT_STRING", "VAX_BIT_STRING"): defaultdict(
+        lambda: "UnsignedBitString"
+    ),
+}
+_tbl_data_types = {
+    (
+        ("Field_Binary",),
+        ("MSB_INTEGER", "INTEGER", "SUN_INTEGER", "MAC_INTEGER"),
+    ): defaultdict(
+        lambda: "Unknown",
+        {
+            "1": "SignedByte",
+            "2": "SignedMSB2",
+            "4": "SignedMSB4",
+            "8": "SignedMSB8",
+        },
+    ),
+    (
+        ("Field_Binary",),
+        (
+            "MSB_UNSIGNED_INTEGER",
+            "SUN_UNSIGNED_INTEGER",
+            "MAC_UNSIGNED_INTEGER",
+            "UNSIGNED_INTEGER",
+        ),
+    ): defaultdict(
+        lambda: "Unknown",
+        {
+            "1": "UnsignedByte",
+            "2": "UnsignedMSB2",
+            "4": "UnsignedMSB4",
+            "8": "UnsignedMSB8",
+        },
+    ),
+    (("Field_Binary",), ("LSB_INTEGER", "PC_INTEGER", "VAX_INTEGER")): defaultdict(
+        lambda: "Unknown",
+        {
+            "1": "SignedByte",
+            "2": "SignedLSB2",
+            "4": "SignedLSB4",
+            "8": "SignedLSB8",
+        },
+    ),
+    (
+        ("Field_Binary",),
+        ("LSB_UNSIGNED_INTEGER", "PC_UNSIGNED_INTEGER", "VAX_UNSIGNED_INTEGER"),
+    ): defaultdict(
+        lambda: "Unknown",
+        {
+            "1": "UnsignedByte",
+            "2": "UnsignedLSB2",
+            "4": "UnsignedLSB4",
+            "8": "UnsignedLSB8",
+        },
+    ),
+    (
+        ("Field_Binary",),
+        (
+            "IEEE_REAL",
+            "FLOAT",
+            "REAL",
+            "MAC_REAL",
+            "SUN_REAL",
+            "VAX_REAL",
+            "VAXG_REAL",
+            "VAX_DOUBLE",
+        ),
+    ): defaultdict(
+        lambda: "Unknown",
+        {
+            "4": "IEEE754MSBSingle",
+            "8": "IEEE754MSBDouble",
+        },
+    ),
+    (("Field_Binary",), ("PC_REAL",)): defaultdict(
+        lambda: "Unknown",
+        {
+            "4": "IEEE754LSBSingle",
+            "8": "IEEE754LSBDouble",
+        },
+    ),
+    (("Field_Binary",), ("PC_COMPLEX",)): defaultdict(
+        lambda: "Unknown",
+        {
+            "1": "ComplexLSB8",
+            "2": "ComplexLSB16",
+        },
+    ),
+    (
+        ("Field_Binary",),
+        ("COMPLEX", "MAC_COMPLEX", "SUN_COMPLEX", "VAX_COMPLEX", "VAXG_COMPLEX"),
+    ): defaultdict(
+        lambda: "Unknown",
+        {
+            "1": "ComplexMSB8",
+            "2": "ComplexMSB16",
+        },
+    ),
+    (
+        ("Field_Binary", "Field_Character"),
+        (
+            "MSB_BIT_STRING",
+            "LSB_BIT_STRING",
+            "VAX_BIT_STRING",
+            "BCD",
+            "BINARY_CODED_DECIMAL",
+            "BINARY CODED DECIMAL",
+        ),
+    ): defaultdict(lambda: "SignedBitString"),
+    (("Field_Binary", "Field_Character"), ("CHARACTER",)): defaultdict(
+        lambda: "ASCII_String"
+    ),
+    (("Field_Binary", "Field_Character"), ("TIME", "DATE")): defaultdict(
+        lambda: "ASCII_Date_Time_YMD_UTC"
+    ),
+    (("Field_Binary", "Field_Character"), ("BOOLEAN")): defaultdict(
+        lambda: "UnsignedByte"
+    ),
+    (("Field_Character",), ("ASCII_REAL", "ASCII REAL")): defaultdict(
+        lambda: "ASCII_Real"
+    ),
+    (("Field_Character",), ("ASCII_INTEGER", "ASCII INTEGER", "INTEGER")): defaultdict(
+        lambda: "ASCII_Integer"
+    ),
+}
 
 if __name__ == "__main__":
-    # test_file_base = "/home/psoutham/src/JPL/data/_other_tools/pds-view"
-    test_file_base = "/srv/nfs_share_code/JPL/pds/data/_other_tools/pds-view/"
+    test_file_base = "/home/psoutham/src/JPL/pds/data/_other_tools/pds-view"
+    # test_file_base = "/srv/nfs_share_code/JPL/pds/data/_other_tools/pds-view/"
     test_files = [
         "test_data/ELE_MOM.LBL",
-        # "test_data/FF01.LBL",
-        # "test_data/FHA01118.LBL",
-        # "test_data/N1727539187_1.LBL",
+        "test_data/FF01.LBL",
+        "test_data/FHA01118.LBL",
+        # "test_data/N1727539187_1.LBL", # todo, why this think it's a table
         # "test_data/BA03S183.IMG",
         # "test_data/C000M5232T493378259EDR_F0000_0134M1.IMG",
         # "test_data/FF01.IMG",
