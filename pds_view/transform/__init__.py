@@ -1,4 +1,4 @@
-# Copyright (c) 2021, California Institute of Technology ("Caltech").  
+# Copyright (c) 2021, California Institute of Technology ("Caltech").
 # U.S. Government sponsorship acknowledged.
 #
 # All rights reserved.
@@ -27,22 +27,3 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-import typing
-import operator
-from collections import Counter
-
-from .reader import read_pds3_header
-
-
-def parse_for_multiple_ids(data: typing.BinaryIO) -> list[str]:
-    """Looking for duplicate keys under a heading.
-    e.g. {"TABLE": {"COLUMN": .....}, {"COLUMN": .....}}
-    """
-
-    c = Counter(
-        map(
-            operator.itemgetter(1),
-            filter(lambda x: x[0] == "OBJECT", read_pds3_header(data)),
-        )
-    )
-    return [k for (k, v) in c.items() if v > 1]

@@ -28,8 +28,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 import itertools
-import typing
 import re
+import typing
 
 _comment_start = re.compile(br"/\*")
 _comment_end = re.compile(br"(.)+\*/")
@@ -50,9 +50,14 @@ def read_pds3_header(data: typing.BinaryIO):
 
         return []
 
-    tokens: list[bytes] = list(map(lambda x: x.decode("utf-8", "ignore"),
-        itertools.chain.from_iterable(map(_line_filter, map(lambda x: x.strip(), data)))
-    ))
+    tokens: list[bytes] = list(
+        map(
+            lambda x: x.decode("utf-8", "ignore"),
+            itertools.chain.from_iterable(
+                map(_line_filter, map(lambda x: x.strip(), data))
+            ),
+        )
+    )
 
     record_indicies = [
         i for (i, t) in enumerate(tokens) if t == _magic_record_finding_token

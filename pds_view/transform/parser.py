@@ -27,8 +27,9 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+import operator
 import typing
-from collections import deque
+from collections import Counter, deque
 
 from .reader import read_pds3_header
 
@@ -48,6 +49,22 @@ class _ParserNode:
         self.parent = parent
 
 
+def _parse_for_multiple_ids(data: typing.BinaryIO) -> list[str]:
+    """Looking for duplicate keys under a heading.
+    e.g. {"TABLE": {"COLUMN": .....}, {"COLUMN": .....}}
+    """
+
+    c = Counter(
+        map(
+            operator.itemgetter(1),
+            filter(lambda x: x[0] == "OBJECT", read_pds3_header(data)),
+        )
+    )
+    # reset the data and leave it how we found it
+    data.seek(0, 0)
+    return [k for (k, v) in c.items() if v > 1]
+
+
 def _remove_double_quotes(children: dict) -> dict:
     for (k1, v1) in children.items():
         if isinstance(v1, dict):
@@ -60,7 +77,10 @@ def _remove_double_quotes(children: dict) -> dict:
     return children
 
 
-def parse(data: typing.BinaryIO, dup_ids=None) -> dict[str, typing.Union[str, dict]]:
+def parse_pds3_lbl(
+    data: typing.BinaryIO, dup_ids=None
+) -> dict[str, typing.Union[str, dict]]:
+    dup_ids = _parse_for_multiple_ids(data)
     root = _ParserNode()
     current_node = root
     expected_end_queue = deque()
@@ -97,6 +117,3 @@ def parse(data: typing.BinaryIO, dup_ids=None) -> dict[str, typing.Union[str, di
         root.children["TABLE"][key_] = columns
 
     return _remove_double_quotes(root.children)
-
-def parse_jh(data: typing.BinaryIO, dup_ids=None) -> dict[str, typing.Union[str, dict]]:
-    return parse(data, dup_ids)
