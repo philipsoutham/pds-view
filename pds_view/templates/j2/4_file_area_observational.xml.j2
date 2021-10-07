@@ -1,0 +1,35 @@
+{%- for key_ in ptr_object_map -%}
+<File_Area_Observational>
+    <File>
+        <file_name>{{key_}}</file_name>
+    </File>
+    {% for object_name in ptr_object_map[key_] -%}
+    {%- set obj_ = label[object_name] -%}
+    {%- if object_name == "IMAGE" -%}
+    {%- elif object_name in ("TABLE", "SERIES") -%}
+        {%- set table_type = "" -%}
+        {%- set table_type = "" -%}
+        {%- if obj_.INTERCHANGE_FORMAT == "ASCII" -%}
+            {%- set table_type = "Table_Character" -%}
+        {%- else -%}
+            {%- set table_type = "Table_Binary" -%}
+        {%- endif -%}
+    <{{table_type}}>
+        <local_identifier>{{object_placeholder}}</local_identifier>
+        <offset unit="byte">{{ptr_offset_map[key_][loop.index0]}}</offset>
+        <records>{{obj_.ROWS}}</records>
+        {%- set record_type = "" -%}
+        {% if table_type == "Table_Character" -%}
+        <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+        {%- set record_type = "Record_Character" -%}
+        {%- else -%}
+        {%- set record_type = "Record_Binary" -%}
+        {%- endif %}
+        <{{record_type}}>
+            <fields>$totalColumns</fields>
+        </{{record_type}}>
+    </{{table_type}}>
+    {%- endif -%}
+    {%- endfor %}
+</File_Area_Observational>
+{%- endfor %}

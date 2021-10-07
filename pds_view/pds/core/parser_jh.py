@@ -225,7 +225,7 @@ class Parser_jh(object):
         child_values = self.remove_double_quotes(root.children)
 
         # Now remove all the whitespace
-       # child_values = self.strip_dict(child_values)
+        # child_values = self.strip_dict(child_values)
 
         return child_values
 

@@ -14,3 +14,4 @@ typescript
 .*.swp
 *.sublime-*
 test_data
+*.done

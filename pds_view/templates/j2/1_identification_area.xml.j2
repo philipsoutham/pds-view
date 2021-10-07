@@ -1,0 +1,28 @@
+    <Identification_Area>
+        {% if label.PRODUCT_ID -%}
+        <logical_identifier>urn:nasa:pds:data:{{label.DATA_SET_ID|lower}}:{{label.PRODUCT_ID|lower}}</logical_identifier>
+        {%- else -%}
+        <logical_identifier>urn:nasa:pds:data:{{label.DATA_SET_ID|lower|replace("/","-")}}:{{generate.file_name|lower}}</logical_identifier>
+        {%- endif %}
+        <version_id>1.0</version_id>
+        <title>
+        {%- if label.OBSERVATION_NAME -%}
+        {{label.OBSERVATION_NAME|lower}}
+        {%- elif label.OBSERVATION_ID -%}
+        {{label.OBSERVATION_ID|lower}}
+        {%- elif label.PRODUCT_NAME -%}
+        {{label.PRODUCT_NAME|lower}}
+        {%- else -%}
+        {{label.DATA_SET_ID|lower}}{%- if label.PRODUCT_ID %} {{label.PRODUCT_ID|lower}}{%- endif -%}
+        {%- endif -%}
+        </title>
+        <information_model_version>{{generate.model_version}}</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>{{generate.current_date_utc}}</modification_date>
+                <version_id>1.0</version_id>
+                <description>Auto generated PDS4 product label created by the Transform Tool.</description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>

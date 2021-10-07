@@ -27,6 +27,8 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
+## TODO: This is still a mess, clean this up
 import typing
 from collections import defaultdict
 from datetime import datetime
@@ -77,7 +79,7 @@ def _convert_to_pds4(file_: Path, labels: dict[str, typing.Union[str, dict]]):
     keys = list(labels.keys())
     for key in keys:
         if "^" in key:
-            pointer_fname = str(file_)
+            pointer_fname = file_.name
             associated_object = key.split("_")[-1].replace("^", "")
             if labels[key][0] == "(" and labels[key][-1] == ")":
                 labels[key] = labels[key][1:-1]
@@ -111,44 +113,58 @@ def _convert_to_pds4(file_: Path, labels: dict[str, typing.Union[str, dict]]):
                         print("some kind of error")
 
                 offset = labels[key].split(",")[1].split("<")[0]
-
             new_key = key.replace("^", "PTR_")
-
             object_type = f'{new_key.split("_")[-1]}_0'
-
             if "HEADER" in object_type:
                 continue
-
             labels[new_key] = labels.pop(key)
             # this replaces the add_to_file_dict method
             ptr_object_dict[pointer_fname].append(associated_object)
             ptr_offset_dict[pointer_fname].append(int(offset))
 
-    loader = CachingFileLoader(resource_path("./templates"))
-    template = loader.load_template("inspectTemplate.vm")
+    # loader = CachingFileLoader(resource_path("./templates"))
+    # template = loader.load_template("inspectTemplate.vm")
     map_ = {
         "label": labels,
-        "str": str,
+        # "str": str,
         "generate": generate,
         "ptr_object_map": dict(ptr_object_dict),
         "ptr_offset_map": dict(ptr_offset_dict),
         "object_placeholder": object_type,
     }
-    from pprint import pprint
-    pprint(map_)
     # out = template.merge(map_, loader=loader)
-    # print(out)
+    # dom = xml.dom.minidom.parseString(out)
+    # pds4_xml = os.linesep.join(
+    #     [
+    #         s
+    #         for s in xml.dom.minidom.parseString(template.merge(map_, loader=loader))
+    #         .toprettyxml()
+    #         .splitlines()
+    #         if s.strip()
+    #     ]
+    # )
+    # print(pds4_xml)
 
+    j2_loader = FileSystemLoader("pds_view/templates/j2")
+    env = Environment(loader=j2_loader, autoescape=select_autoescape())
+    template = env.get_template("0_base.xml.j2")
+    print(template.render(**map_))
+    
+    # TODO: write file here
+
+
+import xml.dom.minidom
+import os
+from jinja2 import Environment, PackageLoader, FileSystemLoader, select_autoescape
 
 if __name__ == "__main__":
-    test_file_base = "/home/psoutham/src/JPL/data/_other_tools/pds-view"
-    # test_file_base = "/srv/nfs_share_code/JPL/pds/data/_other_tools/pds-view/"
+    # test_file_base = "/home/psoutham/src/JPL/data/_other_tools/pds-view"
+    test_file_base = "/srv/nfs_share_code/JPL/pds/data/_other_tools/pds-view/"
     test_files = [
         "test_data/ELE_MOM.LBL",
         # "test_data/FF01.LBL",
         # "test_data/FHA01118.LBL",
         # "test_data/N1727539187_1.LBL",
-
         # "test_data/BA03S183.IMG",
         # "test_data/C000M5232T493378259EDR_F0000_0134M1.IMG",
         # "test_data/FF01.IMG",

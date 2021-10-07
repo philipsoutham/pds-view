@@ -288,11 +288,13 @@
 ##    <TEST_TEST_col_NAME>$column.size()</TEST_TEST_col_NAME>
 
     <field_location unit="byte">$column.START_BYTE</field_location>
-    #if ( $!{bitColumns} and $bitColumns.size() > 0 )
-    <data_type>UnsignedBitString</data_type>
-    #else
+## TODO: commented this out because I didn't see a macro for getBitColumns so this was always going
+## to be false
+##    #if ( $!{bitColumns} and $bitColumns.size() > 0 )
+##    <data_type>UnsignedBitString</data_type>
+##    #else
       #getDataType ($column $fieldType $column.BYTES)
-    #end
+##    #end
     <field_length unit="byte">$column.BYTES</field_length>
     #if ( $fieldType == "Field_Binary" )
       #if ( $!{bitColumns} )
