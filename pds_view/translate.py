@@ -321,8 +321,8 @@ _tbl_data_types = {
 }
 
 if __name__ == "__main__":
-    test_file_base = "/home/psoutham/src/JPL/pds/data/_other_tools/pds-view"
-    # test_file_base = "/srv/nfs_share_code/JPL/pds/data/_other_tools/pds-view/"
+    # test_file_base = "/home/psoutham/src/JPL/pds/data/_other_tools/pds-view"
+    test_file_base = "/srv/nfs_share_code/JPL/pds/data/_other_tools/pds-view/"
     test_files = [
         "test_data/ELE_MOM.LBL",
         "test_data/FF01.LBL",

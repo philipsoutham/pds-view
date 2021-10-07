@@ -60,7 +60,7 @@ def _remove_double_quotes(children: dict) -> dict:
     return children
 
 
-def parse_jh(data: typing.BinaryIO, dup_ids=None) -> dict[str, typing.Union[str, dict]]:
+def parse(data: typing.BinaryIO, dup_ids=None) -> dict[str, typing.Union[str, dict]]:
     root = _ParserNode()
     current_node = root
     expected_end_queue = deque()
@@ -97,3 +97,6 @@ def parse_jh(data: typing.BinaryIO, dup_ids=None) -> dict[str, typing.Union[str,
         root.children["TABLE"][key_] = columns
 
     return _remove_double_quotes(root.children)
+
+def parse_jh(data: typing.BinaryIO, dup_ids=None) -> dict[str, typing.Union[str, dict]]:
+    return parse(data, dup_ids)
