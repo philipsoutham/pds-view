@@ -35,6 +35,7 @@ _comment_start = re.compile(br"/\*")
 _comment_end = re.compile(br"(.)+\*/")
 _magic_record_finding_token = "="
 
+__all__ = ["read_pds3_header"]
 
 def read_pds3_header(data: typing.BinaryIO):
     def _line_filter(line: bytes) -> list[bytes]:

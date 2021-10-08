@@ -27,24 +27,7 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
-from __future__ import print_function
-import sys, os, os.path
-
+## TODO
 __author__ = 'Sean Hardman,Jim Hofman'
 __email__ = 'Sean.Hardman@jpl.nasa.gov,James.E.Hofman@jpl.nasa.gov'
 __version__ = '0.4.0-dev'
-
-
-def resource_path(path):
-    u'''Return the package-normalized path to the resource at ``path``.
-    Normally, we'd use pkg_resources for this, except PyInstaller doesn't
-    support pkg_resources except in eggs, and this is a source distribution.
-    '''
-    base = getattr(sys, '_MEIPASS', None)
-    if base is not None:
-        return os.path.join(base, path)
-    else:
-        cwd = os.getcwd()
-        pkg = os.path.join(cwd, 'pds_view')
-        return os.path.join(pkg, path) if os.path.isdir(pkg) else os.path.join(cwd, path)

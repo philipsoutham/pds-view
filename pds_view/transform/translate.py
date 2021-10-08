@@ -36,6 +36,9 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .parser import parse_pds3_lbl
 
+
+__all__ = ["translate_to_pds4"]
+
 _DATA_POINTERS = ["^IMAGE", "^TABLE", "^SERIES", "^SPREADSHEET"]
 _JINJA_ENV = Environment(
     loader=FileSystemLoader(Path(__file__).parent.joinpath("templates", "j2")),
@@ -223,8 +226,10 @@ _TBL_DATA_TYPES = {
 def translate_to_pds4(file_: Path):
     with open(file_, "rb") as f:
         labels = parse_pds3_lbl(f)
-    # debug
+
     _convert_to_pds4(file_, labels)
+    # from pprint import pprint
+    # pprint(labels)
 
 
 def _represents_int(s: typing.Any) -> bool:
@@ -250,7 +255,8 @@ def _convert_to_pds4(file_: Path, labels: dict[str, typing.Union[str, dict]]):
     record_bytes = int(next(v for (k, v) in labels.items() if k == "RECORD_BYTES"))
     keys = list(labels.keys())
     for key in keys:
-        if "^" in key:
+        # TODO: does this ever show up outside of key[0]
+        if "^" == key[0]:
             pointer_fname = file_.name
             associated_object = key.split("_")[-1].replace("^", "")
             if labels[key][0] == "(" and labels[key][-1] == ")":
@@ -312,11 +318,11 @@ def _convert_to_pds4(file_: Path, labels: dict[str, typing.Union[str, dict]]):
 
 
 if __name__ == "__main__":
-    # test_file_base = "/home/psoutham/src/JPL/pds/data/_other_tools/pds-view"
-    test_file_base = "/srv/nfs_share_code/JPL/pds/data/_other_tools/pds-view/"
+    cwd = Path(__file__).parent
+    test_file_base = cwd.joinpath("..","..")
     test_files = [
-        "test_data/ELE_MOM.LBL",
-        # "test_data/FF01.LBL",
+        # "test_data/ELE_MOM.LBL",
+        "test_data/FF01.LBL",
         # "test_data/FHA01118.LBL",
         # "test_data/N1727539187_1.LBL", # todo, why this think it's a table
         # "test_data/BA03S183.IMG",

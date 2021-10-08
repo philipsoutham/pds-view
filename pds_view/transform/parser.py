@@ -33,6 +33,8 @@ from collections import Counter, deque
 
 from .reader import read_pds3_header
 
+__all__ = ["parse_pds3_lbl"]
+
 _CONTAINERS = {"OBJECT": "END_OBJECT", "GROUP": "END_GROUP"}
 _CONTAINERS_START = list(_CONTAINERS.keys())
 _CONTAINERS_END = list(_CONTAINERS.values())
