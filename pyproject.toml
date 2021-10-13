@@ -13,7 +13,7 @@ matplotlib = "^3.4.3"
 seaborn = "^0.11.2"
 # PyQt6 = "^6.2.0"
 numpy = "^1.21.2"
-Kivy = {extras = ["base"], version = "^2.0.0"}
+# Kivy = {extras = ["base"], version = "^2.0.0"}
 Jinja2 = "^3.0.2"
 
 [tool.poetry.dev-dependencies]
