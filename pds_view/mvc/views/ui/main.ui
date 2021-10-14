@@ -144,8 +144,410 @@
               <string>something</string>
              </property>
              <property name="icon">
-              <iconset theme="image-x-generic"/>
+              <iconset theme="image-x-generic">
+               <normaloff>.</normaloff>.</iconset>
              </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Color Map</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="color_map_combo">
+             <item>
+              <property name="text">
+               <string>gray</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Reds</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Greens</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Blues</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hot</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>afmhot</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gist_heat</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>cool</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>coolwarm</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>jet</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>rainbow</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hsv</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Paired</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Accent</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BrBG</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BuGn</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BuPu</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>CMRmap</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Dark2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>GnBu</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Greys</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>OrRd</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Oranges</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PRGn</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PuOr</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PuRd</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Purples</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>RdBu</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>RdGy</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>RdPu</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>RdYlBu</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>RdYlGn</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Set1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Set2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Set3</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Spectral</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Wistia</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>YlGn</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>YlGnBu</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>YlOrBr</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>YlOrRd</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>autumn</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>binary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>bone</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>brg</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>bwr</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>cividis</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>copper</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>cubehelix</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>flag</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gist_earth</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gist_gray</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gist_ncar</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gist_rainbow</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gist_stern</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gist_yarg</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gnuplot</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gnuplot2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>inferno</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>magma</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>nipy_spectral</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>ocean</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>pink</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>plasma</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>prism</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>seismic</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>spring</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>summer</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>tab10</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>tab20</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>tab20b</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>tab20c</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>terrain</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>turbo</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>twilight</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>twilight_shifted</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>viridis</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>winter</string>
+              </property>
+             </item>
             </widget>
            </item>
            <item>
@@ -458,6 +860,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>color_map_combo</sender>
+   <signal>activated(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>_color_map_changed(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>190</x>
+     <y>172</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>_select_pds_file()</slot>
@@ -466,5 +884,6 @@
   <slot>_export_csv()</slot>
   <slot>_export_image()</slot>
   <slot>_tab_changed(int)</slot>
+  <slot>_color_map_changed(QString)</slot>
  </slots>
 </ui>

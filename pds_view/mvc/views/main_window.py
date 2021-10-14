@@ -19,12 +19,16 @@ from PyQt5.QtWidgets import QFileDialog, QMainWindow, QWidget
 
 from ..models import SummaryTableModel, TableModel
 
-_IMAGE_TYPES = (
+_2D_IMAGE_TYPES = (
     "Array_2D_Image",
-    "Array_3D_Image",
-    "Array_3D_Spectrum",
     "Array_2D_Map",
 )
+
+_3D_IMAGE_TYPES = (
+    "Array_3D_Image",
+    "Array_3D_Spectrum",
+)
+_IMAGE_TYPES = _2D_IMAGE_TYPES + _3D_IMAGE_TYPES
 
 
 def _load_summary_df(
@@ -105,45 +109,60 @@ class MainWindow(QMainWindow):
     def _quit(self):
         self.close()
 
-    def _summary_table_row_clicked(self, idx: QModelIndex):
-        m = idx.model()
-        d = m.index(idx.row(), 0).data()
-        self.current_obj_name.setText(d)
-        tbl_data = next(s.data for s in self.structure_list.structures if s.id == d)
-        df = pd.DataFrame(
-            data=tbl_data,
-        )
-        tm = TableModel(df)
-        self.data_table_view.setModel(tm)
-        self._control_tab_family(2, True)
+    def _data_table(self, df: pd.DataFrame):
+        """Populates table view in Table tab"""
+        self.data_table_view.setModel(TableModel(df))
+        ## For large tables the below takes a while to complete
         # self.data_table_view.resizeColumnsToContents()
+        self._control_tab_family(2, True)
         self.action_save_table_as.setEnabled(True)
 
-        # if w := self.image_grid_layout.itemAt(0):
+    def _color_map_changed(self, cmap: str):
+        self._2d_image(self.table_df, cmap)
+
+    def _2d_image(self, df: pd.DataFrame, cmap: str = "gray"):
+        """Renders image in Image tab"""
         if w := self.image_view_layout.itemAt(0):
-            # self.image_grid_layout.removeWidget(w.widget())
             self.image_view_layout.removeWidget(w.widget())
 
-        if m.index(idx.row(), 1).data() in _IMAGE_TYPES:
-            figure = Figure((40.0, 32.0), dpi=72.0)
-            imageWidget = FigureCanvas(figure)
+        figure = Figure((40.0, 32.0), dpi=72.0)
+        image_widget = FigureCanvas(figure)
 
-            axes = figure.add_subplot(111)
-            axes.autoscale_view(True, True, True)
-            axes.imshow(
-                df.to_numpy(),
-                origin="lower",
-                interpolation="none",
-                norm=mpl.colors.Normalize(clip=False),
-                aspect="equal",
-                cmap="gray",
-            )
-            self.image_view_layout.addWidget(imageWidget)
-            # self.image_grid_layout.addWidget(imageWidget)
+        axes = figure.add_subplot(111)
+        axes.autoscale_view(True, True, True)
+        axes.imshow(
+            df.to_numpy(),
+            origin="lower",
+            interpolation="none",
+            norm=mpl.colors.Normalize(clip=False),
+            aspect="equal",
+            cmap=cmap,
+        )
+        self.image_view_layout.addWidget(image_widget)
 
-            self._control_tab_family(4, True)
-            self.tab_display.setCurrentWidget(self.tab_display.widget(4))
-            self.action_save_image_as.setEnabled(True)
+        self._control_tab_family(4, True)
+        self.tab_display.setCurrentWidget(self.tab_display.widget(4))
+        self.action_save_image_as.setEnabled(True)
+
+    def _summary_table_row_clicked(self, idx: QModelIndex):
+        q_model = idx.model()
+        data_obj = q_model.index(idx.row(), 0).data()
+        self.current_obj_name.setText(data_obj)
+
+        tbl_data = next(
+            s.data for s in self.structure_list.structures if s.id == data_obj
+        )
+        self.table_df = pd.DataFrame(
+            data=tbl_data,
+        )
+        self._data_table(self.table_df)
+
+        if w := self.image_view_layout.itemAt(0):
+            self.image_view_layout.removeWidget(w.widget())
+
+        if (data_type := q_model.index(idx.row(), 1).data()) in _IMAGE_TYPES:
+            if data_type in _2D_IMAGE_TYPES:
+                self._2d_image(self.table_df)
         else:
             self._control_tab_family(4, False)
             self.tab_display.setCurrentWidget(self.tab_display.widget(2))
