@@ -119,17 +119,18 @@ class MainWindow(QMainWindow):
         # self.data_table_view.resizeColumnsToContents()
         self.action_save_table_as.setEnabled(True)
 
-        w = self.image_grid_layout.itemAt(0)
-        if w:
-            self.image_grid_layout.removeWidget(w.widget())
+        # if w := self.image_grid_layout.itemAt(0):
+        if w := self.image_view_layout.itemAt(0):
+            # self.image_grid_layout.removeWidget(w.widget())
+            self.image_view_layout.removeWidget(w.widget())
 
         if m.index(idx.row(), 1).data() in _IMAGE_TYPES:
-            figure = Figure((10.0, 8.0), dpi=72.0)
+            figure = Figure((40.0, 32.0), dpi=72.0)
             imageWidget = FigureCanvas(figure)
 
             axes = figure.add_subplot(111)
             axes.autoscale_view(True, True, True)
-            image = axes.imshow(
+            axes.imshow(
                 df.to_numpy(),
                 origin="lower",
                 interpolation="none",
@@ -137,7 +138,9 @@ class MainWindow(QMainWindow):
                 aspect="equal",
                 cmap="gray",
             )
-            self.image_grid_layout.addWidget(imageWidget)
+            self.image_view_layout.addWidget(imageWidget)
+            # self.image_grid_layout.addWidget(imageWidget)
+
             self._control_tab_family(4, True)
             self.tab_display.setCurrentWidget(self.tab_display.widget(4))
             self.action_save_image_as.setEnabled(True)
@@ -152,8 +155,8 @@ class MainWindow(QMainWindow):
         )
         self.data_table_view.model().to_csv(fname)
 
-    def _export_image(self):
-        print("export image")
+    def _export_image(self, *args):
+        print(f"export image {args}")
 
     def _tab_changed(self, idx: int):
         print(f"here in tab {idx}")
