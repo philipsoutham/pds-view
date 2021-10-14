@@ -7,7 +7,7 @@ authors = ["Philip Southam <philip.southam@jpl.nasa.gov>"]
 [tool.poetry.dependencies]
 python = ">=3.9,<3.11"
 PyQt5 = "^5.15.4"
-airspeed = "^0.5.17"
+# airspeed = "^0.5.17"
 Pillow = "^8.3.2"
 matplotlib = "^3.4.3"
 seaborn = "^0.11.2"
@@ -15,6 +15,7 @@ seaborn = "^0.11.2"
 numpy = "^1.21.2"
 # Kivy = {extras = ["base"], version = "^2.0.0"}
 Jinja2 = "^3.0.2"
+pandas = "^1.3.3"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"

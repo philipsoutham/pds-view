@@ -1,16 +1,18 @@
+import os
+os.environ["QT_LOGGING_RULES"]='*.debug=false;qt.qpa.*=false'
 import sys
 import typing
 from pathlib import Path
 from collections import defaultdict
 
 import pandas as pd
-from pds4_tools.reader import data
+# from pds4_tools.reader import data
 from pds4_tools.reader.header_objects import HeaderStructure
 from pds4_tools.reader.array_objects import ArrayStructure
 from pds4_tools.reader.data import PDS_ndarray
 from pds4_tools.reader import pds4_read
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QModelIndex
+from PyQt5.QtCore import QModelIndex
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QWidget
 
 from ..models import SummaryTableModel, TableModel
