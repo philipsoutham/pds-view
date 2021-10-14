@@ -330,7 +330,7 @@
    <sender>summary_table_view</sender>
    <signal>clicked(QModelIndex)</signal>
    <receiver>MainWindow</receiver>
-   <slot>_summary_table_row_clicked()</slot>
+   <slot>_summary_table_row_clicked(QModelIndex)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>399</x>
@@ -374,12 +374,29 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tab_display</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>_tab_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>399</x>
+     <y>336</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>_select_pds_file()</slot>
   <slot>_quit()</slot>
-  <slot>_summary_table_row_clicked()</slot>
+  <slot>_summary_table_row_clicked(QModelIndex)</slot>
   <slot>_export_csv()</slot>
   <slot>_export_image()</slot>
+  <slot>_tab_changed(int)</slot>
  </slots>
 </ui>

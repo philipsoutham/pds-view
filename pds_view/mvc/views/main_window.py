@@ -154,6 +154,11 @@ class MainWindow(QMainWindow):
 
     def _export_image(self):
         print("export image")
+
+    def _tab_changed(self, idx: int):
+        print(f"here in tab {idx}")
+
+
 if __name__ == "__main__":
     import sys
 
