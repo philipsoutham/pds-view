@@ -61,6 +61,11 @@ class Ui_MainWindow(object):
         self.tab_display.addTab(self.rgb_image_tab, "")
         self.image_tab = QtWidgets.QWidget()
         self.image_tab.setObjectName("image_tab")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.image_tab)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.image_widget = QtWidgets.QWidget(self.image_tab)
+        self.image_widget.setObjectName("image_widget")
+        self.gridLayout_2.addWidget(self.image_widget, 1, 0, 1, 1)
         self.tab_display.addTab(self.image_tab, "")
         self.summary_tab = QtWidgets.QWidget()
         self.summary_tab.setObjectName("summary_tab")
@@ -143,10 +148,11 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.action_save_image_as)
 
         self.retranslateUi(MainWindow)
-        self.tab_display.setCurrentIndex(2)
+        self.tab_display.setCurrentIndex(4)
         self.action_open.triggered.connect(MainWindow._select_pds_file)
         self.action_quit.triggered.connect(MainWindow._quit)
-        self.summary_table_view.clicked['QModelIndex'].connect(MainWindow._row_clicked)
+        self.summary_table_view.clicked['QModelIndex'].connect(MainWindow._summary_table_row_clicked)
+        self.action_save_table_as.triggered.connect(MainWindow._export_csv)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

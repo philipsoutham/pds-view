@@ -1,21 +1,30 @@
 import os
-os.environ["QT_LOGGING_RULES"]='*.debug=false;qt.qpa.*=false'
-import sys
+
+# os.environ["QT_LOGGING_RULES"] = "*.debug=false;qt.qpa.*=false"
+os.environ["QT_LOGGING_RULES"] = "qt.qpa.*=false"
 import typing
 from pathlib import Path
-from collections import defaultdict
 
+import matplotlib as mpl
 import pandas as pd
-# from pds4_tools.reader import data
-from pds4_tools.reader.header_objects import HeaderStructure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+from pds4_tools.reader import pds4_read
 from pds4_tools.reader.array_objects import ArrayStructure
 from pds4_tools.reader.data import PDS_ndarray
-from pds4_tools.reader import pds4_read
+from pds4_tools.reader.header_objects import HeaderStructure
 from PyQt5 import uic
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QWidget
 
 from ..models import SummaryTableModel, TableModel
+
+_IMAGE_TYPES = (
+    "Array_2D_Image",
+    "Array_3D_Image",
+    "Array_3D_Spectrum",
+    "Array_2D_Map",
+)
 
 
 def _load_summary_df(
@@ -59,6 +68,8 @@ class MainWindow(QMainWindow):
     def _configure_tabs(self):
         self._control_tab_family(1, self._is_3d)
         self._control_tab_family(3, self._is_rgb)
+        self._control_tab_family(4, False)
+        self._control_tab_family(2, False)
 
         self.tab_display.setCurrentWidget(
             self.tab_display.widget(self.tab_display.count() - 1)
@@ -86,37 +97,66 @@ class MainWindow(QMainWindow):
         self.summary_table_view.setModel(tm)
         self.summary_table_view.resizeColumnsToContents()
         self.current_summary_fpath.setText(fname)
+        self.action_save_image_as.setEnabled(False)
+        self.action_save_table_as.setEnabled(False)
         self.current_obj_name.setText("")
         self._configure_tabs()
 
     def _quit(self):
         self.close()
 
-    def _row_clicked(self, idx: QModelIndex):
+    def _summary_table_row_clicked(self, idx: QModelIndex):
         m = idx.model()
         d = m.index(idx.row(), 0).data()
         self.current_obj_name.setText(d)
-        tbl = next(s.data for s in self.structure_list.structures if s.id == d)
-
-        tm = TableModel(
-            pd.DataFrame(
-                data=tbl,
-            )
+        tbl_data = next(s.data for s in self.structure_list.structures if s.id == d)
+        df = pd.DataFrame(
+            data=tbl_data,
         )
+        tm = TableModel(df)
         self.data_table_view.setModel(tm)
-        self.tab_display.setCurrentWidget(self.tab_display.widget(2))
+        self._control_tab_family(2, True)
         # self.data_table_view.resizeColumnsToContents()
         self.action_save_table_as.setEnabled(True)
 
+        w = self.image_grid_layout.itemAt(0)
+        if w:
+            self.image_grid_layout.removeWidget(w.widget())
+
+        if m.index(idx.row(), 1).data() in _IMAGE_TYPES:
+            figure = Figure((10.0, 8.0), dpi=72.0)
+            imageWidget = FigureCanvas(figure)
+
+            axes = figure.add_subplot(111)
+            axes.autoscale_view(True, True, True)
+            image = axes.imshow(
+                df.to_numpy(),
+                origin="lower",
+                interpolation="none",
+                norm=mpl.colors.Normalize(clip=False),
+                aspect="equal",
+                cmap="gray",
+            )
+            self.image_grid_layout.addWidget(imageWidget)
+            self._control_tab_family(4, True)
+            self.tab_display.setCurrentWidget(self.tab_display.widget(4))
+            self.action_save_image_as.setEnabled(True)
+        else:
+            self._control_tab_family(4, False)
+            self.tab_display.setCurrentWidget(self.tab_display.widget(2))
+            self.action_save_image_as.setEnabled(False)
+
     def _export_csv(self):
-        
         fname, _ = QFileDialog.getSaveFileName(
             self, "Save CSV file...", "/tmp", "CSV Files (*.csv)"
         )
         self.data_table_view.model().to_csv(fname)
 
-
+    def _export_image(self):
+        print("export image")
 if __name__ == "__main__":
+    import sys
+
     from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
