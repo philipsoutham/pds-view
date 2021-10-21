@@ -115,8 +115,8 @@
        <layout class="QGridLayout" name="image_grid_layout">
         <item row="1" column="0">
          <widget class="QWidget" name="image_view_widget" native="true">
-          <layout class="QGridLayout" name="image_view_layout">
-           <item row="0" column="0">
+          <layout class="QVBoxLayout" name="image_view_layout">
+           <item>
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -135,20 +135,6 @@
         <item row="0" column="0">
          <widget class="QWidget" name="image_toolbar_widget" native="true">
           <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QToolButton" name="export_button">
-             <property name="toolTip">
-              <string>Save Image As...</string>
-             </property>
-             <property name="text">
-              <string>something</string>
-             </property>
-             <property name="icon">
-              <iconset theme="image-x-generic">
-               <normaloff>.</normaloff>.</iconset>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QLabel" name="label">
              <property name="text">
@@ -551,6 +537,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QCheckBox" name="is_image_inverted">
+             <property name="text">
+              <string>Inverted</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -845,14 +838,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>export_button</sender>
-   <signal>clicked()</signal>
+   <sender>color_map_combo</sender>
+   <signal>activated(QString)</signal>
    <receiver>MainWindow</receiver>
-   <slot>_export_image()</slot>
+   <slot>_color_map_changed(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>37</x>
-     <y>169</y>
+     <x>190</x>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -861,13 +854,13 @@
    </hints>
   </connection>
   <connection>
-   <sender>color_map_combo</sender>
-   <signal>activated(QString)</signal>
+   <sender>is_image_inverted</sender>
+   <signal>stateChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>_color_map_changed(QString)</slot>
+   <slot>_color_inverted(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
+     <x>349</x>
      <y>172</y>
     </hint>
     <hint type="destinationlabel">
@@ -885,5 +878,6 @@
   <slot>_export_image()</slot>
   <slot>_tab_changed(int)</slot>
   <slot>_color_map_changed(QString)</slot>
+  <slot>_color_inverted(int)</slot>
  </slots>
 </ui>

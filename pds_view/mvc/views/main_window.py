@@ -7,14 +7,17 @@ from pathlib import Path
 
 import matplotlib as mpl
 import pandas as pd
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas,
+    NavigationToolbar2QT,
+)
 from matplotlib.figure import Figure
 from pds4_tools.reader import pds4_read
 from pds4_tools.reader.array_objects import ArrayStructure
 from pds4_tools.reader.data import PDS_ndarray
 from pds4_tools.reader.header_objects import HeaderStructure
 from PyQt5 import uic
-from PyQt5.QtCore import QModelIndex
+from PyQt5.QtCore import QModelIndex, Qt
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QWidget
 
 from ..models import SummaryTableModel, TableModel
@@ -51,6 +54,14 @@ def _load_summary_df(
         ],
         columns=["Name", "Type", "Dimension"],
     )
+
+
+class _NavigationToolBar(NavigationToolbar2QT):
+    toolitems = [
+        t
+        for t in NavigationToolbar2QT.toolitems
+        if t[0] in ("Home", "Pan", "Zoom", "Save")
+    ]
 
 
 class MainWindow(QMainWindow):
@@ -117,16 +128,32 @@ class MainWindow(QMainWindow):
         self._control_tab_family(2, True)
         self.action_save_table_as.setEnabled(True)
 
-    def _color_map_changed(self, cmap: str):
-        self._2d_image(self.table_df, cmap)
+    def _color_map_changed(self, *_):
+        self._2d_image(self.table_df, self._get_cmap())
+
+    def _color_inverted(self, *_):
+        self._2d_image(self.table_df, self._get_cmap())
+
+    def _get_cmap(self) -> str:
+        selected: str = self.color_map_combo.currentText()
+        if self.is_image_inverted.checkState() == Qt.CheckState.Checked:
+            return f"{selected}_r"
+        return selected
+
+    def _clear_image_tab(self):
+        for idx in range(self.image_view_layout.count() - 1, -1, -1):
+            self.image_view_layout.removeWidget(
+                self.image_view_layout.itemAt(idx).widget()
+            )
 
     def _2d_image(self, df: pd.DataFrame, cmap: str = "gray"):
         """Renders image in Image tab"""
-        if w := self.image_view_layout.itemAt(0):
-            self.image_view_layout.removeWidget(w.widget())
+        self._clear_image_tab()
 
         figure = Figure((40.0, 32.0), dpi=72.0)
         image_widget = FigureCanvas(figure)
+        nav_toolbar = _NavigationToolBar(image_widget, self)
+        self.image_view_layout.insertWidget(0, nav_toolbar)
 
         axes = figure.add_subplot(111)
         axes.autoscale_view(True, True, True)
@@ -138,7 +165,7 @@ class MainWindow(QMainWindow):
             aspect="equal",
             cmap=cmap,
         )
-        self.image_view_layout.addWidget(image_widget)
+        self.image_view_layout.insertWidget(1, image_widget)
 
         self._control_tab_family(4, True)
         self.tab_display.setCurrentWidget(self.tab_display.widget(4))
@@ -157,8 +184,7 @@ class MainWindow(QMainWindow):
         )
         self._data_table(self.table_df)
 
-        if w := self.image_view_layout.itemAt(0):
-            self.image_view_layout.removeWidget(w.widget())
+        self._clear_image_tab()
 
         if (data_type := q_model.index(idx.row(), 1).data()) in _IMAGE_TYPES:
             if data_type in _2D_IMAGE_TYPES:
@@ -178,7 +204,8 @@ class MainWindow(QMainWindow):
         print(f"export image {args}")
 
     def _tab_changed(self, idx: int):
-        print(f"here in tab {idx}")
+        # print(f"here in tab {idx}")
+        pass
 
 
 if __name__ == "__main__":
